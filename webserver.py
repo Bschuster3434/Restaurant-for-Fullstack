@@ -1,10 +1,56 @@
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import cgi
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from database_setup import Base, Restaurant, MenuItem
 
+# Create session and connect to DB
+engine = create_engine('sqlite:///restaurantMenu.db')
+Base.metadata.bind = engine
+DBSession = sessionmaker(bind = engine)
+session = DBSession()
 
 class webServerHandler(BaseHTTPRequestHandler):
 	def do_GET(self):
 		try:
+			if self.path.endswith("/restaurants"):
+				# Get a list of all restaurants
+				restaurants = session.query(Restaurant).all()
+				
+				# Server Response Information
+				self.send_response(200)
+				self.send_header('Content-type', 'text/html')
+				self.end_headers()
+				output = ""
+				output += "<html><body>"
+				output += "<a href=\"/restaurants/new\">Make a New Restaurant Here</a>"
+				output += "<br><br>"
+				for r in restaurants:
+					output += r.name + "<br>"
+					output += """<a href="#">Edit</a><br>"""
+					output += """<a href="#">Delete</a><br>"""
+					output += "<br>"
+				output += "</body></html>"
+				self.wfile.write(output)
+				print output
+				return
+				
+			if self.path.endswith("/restaurants/new"):
+				self.send_response(200)
+				self.send_header('Content-type', 'text/html')
+				self.end_headers()
+				output = ""
+				output += "<html><body>"
+				output += "<h1>Make a New Restaurant</h1><br>"
+				output += '''<form method='POST' enctype='multipart/form-data'
+				action='/restaurants/new'><input name="message" type="text" >
+				<input type = "submit" value= "Create"></form>'''
+				output += "</body></html>"
+				self.wfile.write(output)
+				print output
+				return
+			
+			
 			if self.path.endswith("/hello"):
 				self.send_response(200)
 				self.send_header('Content-type', 'text/html')
