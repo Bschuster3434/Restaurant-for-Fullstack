@@ -3,6 +3,7 @@ import cgi
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Restaurant, MenuItem
+import urllib2
 
 # Create session and connect to DB
 engine = create_engine('sqlite:///restaurantMenu.db')
@@ -41,10 +42,7 @@ class webServerHandler(BaseHTTPRequestHandler):
 				self.end_headers()
 				output = ""
 				output += "<html><body>"
-				output += "<h1>Make a New Restaurant</h1><br>"
-				output += '''<form method='POST' enctype='multipart/form-data'
-				action='/restaurants/new'><input name="message" type="text" >
-				<input type = "submit" value= "Create"></form>'''
+				output += '''<form method='POST' enctype='multipart/form-data' action='/restaurants'><h2>Please Enter New Restaurant</h2><input name="message" type="text" ><input type="submit" value="Submit"> </form>'''
 				output += "</body></html>"
 				self.wfile.write(output)
 				print output
@@ -87,17 +85,17 @@ class webServerHandler(BaseHTTPRequestHandler):
 			self.send_header('Content-type', 'text/html')
 			self.end_headers()
 			ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
+			fields=cgi.parse_multipart(self.rfile, pdict)
+			messagecontent = fields.get('message')
 			if ctype == 'multipart/form-data':
-				fields=cgi.parse_multipart(self.rfile, pdict)
-				messagecontent = fields.get('message')
-			output = ""
-			output +=  "<html><body>"
-			output += " <h2> Okay, how about this: </h2>"
-			output += "<h1> %s </h1>" % messagecontent[0]
-			output += '''<form method='POST' enctype='multipart/form-data' action='/hello'><h2>What would you like me to say?</h2><input name="message" type="text" ><input type="submit" value="Submit"> </form>'''
-			output += "</body></html>"
-			self.wfile.write(output)
-			print output
+				output = ""
+				output +=  "<html><body>"
+				output += " <h2> Okay, how about this: </h2>"
+				output += "<h1> %s </h1>" % messagecontent[0]
+				output += '''<form method='POST' enctype='multipart/form-data' action='/hello'><h2>What would you like me to say?</h2><input name="message" type="text" ><input type="submit" value="Submit"> </form>'''
+				output += "</body></html>"
+				self.wfile.write(output)
+				print output
 		except:
 			pass
 
