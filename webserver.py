@@ -29,7 +29,7 @@ class webServerHandler(BaseHTTPRequestHandler):
 				for r in restaurants:
 					output += r.name + "<br>"
 					output += "<a href=\"" + str(r.id) + "/edit\">Edit</a><br>"
-					output += """<a href="#">Delete</a><br>"""
+					output += "<a href=\"" + str(r.id) + "/delete\">Delete</a><br>"""
 					output += "<br>"
 				output += "</body></html>"
 				self.wfile.write(output)
@@ -42,7 +42,10 @@ class webServerHandler(BaseHTTPRequestHandler):
 				self.end_headers()
 				output = ""
 				output += "<html><body>"
-				output += '''<form method='POST' enctype='multipart/form-data' action='/restaurants/new'><h2>Please Enter New Restaurant</h2><input name="newRestaurantName" type="text" placeholder = 'New Restaurant Name' ><input type="submit" value="Create"> </form>'''
+				output += '''<form method='POST' enctype='multipart/form-data' 
+				action='/restaurants/new'><h2>Please Enter New Restaurant</h2>
+				<input name="newRestaurantName" type="text" placeholder = 'New Restaurant Name' >
+				<input type="submit" value="Create"> </form>'''
 				output += "</body></html>"
 				self.wfile.write(output)
 				print output
@@ -62,11 +65,33 @@ class webServerHandler(BaseHTTPRequestHandler):
 					output += "<html><body>"
 					output += "<h2>" + restaurant.name + "</h2>"
 					output += "<form method='POST' enctype='multipart/form-data' action='/restaurants/%s/edit'>" % link_id
-					output += "<input name=\"updateRestaurantName\" type=\"text\" placeholder = 'Update Restaurant Name' ><input type=\"submit\" value=\"Update\"> </form>"	
+					output += "<input name=\"updateRestaurantName\" type=\"text\" placeholder = 'Update Restaurant Name' ><input type=\"submit\" value=\"Update\"></form>"	
 					output += "</body></html>"
 					self.wfile.write(output)
 					print output
 					return
+					
+			if self.path.endswith("/delete"):
+				# Get the id from the path, which will be the first number
+				link_id = [int(s) for s in self.path.split('/') if s.isdigit()][0]
+				# then go and get the name of the restaurant
+				restaurant = session.query(Restaurant).filter_by(id= link_id).one()
+				
+				if restaurant !=[]:
+					self.send_response(200)
+					self.send_header('Content-type', 'text/html')
+					self.end_headers()
+					output = ""
+					output += "<html><body>"
+					output += "<h1> Are you sure you want to delete " + restaurant.name + " ?</h1>"
+					output += "<form method='POST' enctype='multipart/form-data' action='/restaurants/%s/delete'>" % link_id
+					output += "<input name=\"delete\" type=\"submit\" value=\"Delete\">"
+					output += "<input href='/restaurants' type=\"submit\" value=\"Return to Restaurants Page\"></a>"
+					output += "</form>"	
+					output += "</body></html>"
+					self.wfile.write(output)
+					print output
+					return					
 			
 			if self.path.endswith("/hello"):
 				self.send_response(200)
@@ -117,7 +142,6 @@ class webServerHandler(BaseHTTPRequestHandler):
 				self.end_headers()	
 
 			elif self.path.endswith("/edit"):
-				print "######Part1"
 				ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
 				if ctype == "multipart/form-data":
 					fields=cgi.parse_multipart(self.rfile, pdict)
@@ -125,7 +149,6 @@ class webServerHandler(BaseHTTPRequestHandler):
 
 				# Update Restaurant Record
 				# Get the Id Again
-				print "######Part2"
 				link_id = [int(s) for s in self.path.split('/') if s.isdigit()][0]
 				# then go and get the name of the restaurant
 				restaurant = session.query(Restaurant).filter_by(id= link_id).one()
@@ -137,7 +160,23 @@ class webServerHandler(BaseHTTPRequestHandler):
 				self.send_header('Content-type', 'text/html')
 				self.send_header('Location', '/restaurants')
 				self.end_headers()						
-		
+
+			elif self.path.endswith("/delete"):
+				ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
+				
+				# Update Restaurant Record
+				# Get the Id Again
+				link_id = [int(s) for s in self.path.split('/') if s.isdigit()][0]
+				# then go and get the name of the restaurant
+				restaurant = session.query(Restaurant).filter_by(id= link_id).one()
+				session.delete(restaurant)
+				session.commit()
+				
+				self.send_response(301)
+				self.send_header('Content-type', 'text/html')
+				self.send_header('Location', '/restaurants')
+				self.end_headers()	
+				
 			# self.send_response(301)
 			# self.send_header('Content-type', 'text/html')
 			# self.end_headers()
