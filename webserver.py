@@ -3,7 +3,6 @@ import cgi
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Restaurant, MenuItem
-import urllib2
 
 # Create session and connect to DB
 engine = create_engine('sqlite:///restaurantMenu.db')
