@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 app = Flask(__name__)
 
 from sqlalchemy import create_engine
@@ -10,6 +10,26 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+#Making an API Endpoint (GET Request)
+@app.route('/restaurants/<int:restaurant_id>/menu/JSON/')
+def restaurantMenuJSON(restaurant_id):
+	restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
+	items = session.query(MenuItem).filter_by(restaurant_id = restaurant_id).all()
+	return jsonify(MenuItems=[i.serialize for i in items])
+	
+#Making an API Endpoint for Menu Item
+@app.route('/restaurants/<int:restaurant_id>/menu/<int:menu_id>/JSON/')
+def restaurantMenuItemJSON(restaurant_id, menu_id):
+	restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
+	item = session.query(MenuItem).filter_by(id = menu_id).one()	
+	return jsonify(MenuItems=item.serialize)
+	
+@app.route('/')
+@app.route('/restaurants')
+def restaurantList():
+	restaurants = session.query(Restaurant).all()
+	return render_template('restaurantList.html', restaurants = restaurants)
 
 @app.route('/restaurants/<int:restaurant_id>/')
 def restaurantMenu(restaurant_id):
@@ -25,7 +45,8 @@ def newMenuItem(restaurant_id):
 		newItem = MenuItem(name = request.form['name'], restaurant_id = restaurant_id)
 		session.add(newItem)
 		session.commit()
-		flash("new menu item created!")
+		flash_message = "menu item '" + newItem.name + "' edited!"
+		flash(flash_message)
 		return redirect(url_for('restaurantMenu', restaurant_id = restaurant_id))
 	else:
 		return render_template('newMenuItem.html', restaurant_id = restaurant_id)
@@ -39,6 +60,8 @@ def editMenuItem(restaurant_id, menu_id):
 			editedItem.name = request.form['name']
 		session.add(editedItem)
 		session.commit()
+		flash_message = "menu item '" + editedItem.name + "' edited!"
+		flash(flash_message)
 		return redirect(url_for('restaurantMenu', restaurant_id = restaurant_id))
 	else:
 		#USE THE RENDER_TEMPLATE FUNCTION BELOW TO SEE THE VARIABLES YOU SHOULD USE IN YOUR EDITMENUITEM TEMPLATE
@@ -51,6 +74,8 @@ def deleteMenuItem(restaurant_id, menu_id):
 	if request.method == 'POST':
 		session.delete(deletedItem)
 		session.commit()
+		flash_message = "menu item '" + deletedItem.name + "' deleted!"
+		flash(flash_message)
 		return redirect(url_for('restaurantMenu', restaurant_id = restaurant_id))
 	else:
 		return render_template('deleteMenuItem.html', restaurant_id = restaurant_id, menu_id = menu_id, item = deletedItem)
