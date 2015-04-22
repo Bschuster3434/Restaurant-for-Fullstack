@@ -1,0 +1,21 @@
+<html>
+<head>
+	<title>Add Restaurant</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+</head>
+<body>
+	<div>
+		<h2>Add New Restaurant</h2>
+	</div>
+	
+	<div>
+		
+	<form action="{{ url_for('newRestaurant')}}" method = 'post'>
+	<p>Name:</p><input type = 'text' size='50' name='name'>
+	<p>Description:</p><input type = 'text' size='50' name='description'>
+	</form>
+		<a href='{{ url_for("showRestaurants") }}'>Cancel</a>
+	</div>
+
+</body>
+</html>

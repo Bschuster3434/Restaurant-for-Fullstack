@@ -1,23 +1,43 @@
-from flask import Flask
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 app = Flask(__name__)
+
+#Fake Restaurants
+restaurant = {'name': 'The CRUDdy Crab', 'id': '1', 'description': 'A sample Restaurant that we\'re just putting in the file for now.'}
+
+restaurants = [{'name': 'The CRUDdy Crab', 'id': '1', 'description': 'A sample Restaurant that we\'re just putting in the file for now.'}, {'name':'Blue Burgers', 'id':'2', 'description': 'A sample Restaurant that we\'re just putting in the file for now.'},{'name':'Taco Hut', 'id':'3', 'description': 'A sample Restaurant that we\'re just putting in the file for now.'}]
+
+
+#Fake Menu Items
+items = [ {'name':'Cheese Pizza', 'description':'made with fresh cheese', 'price':'$5.99','course' :'Entree', 'id':'1'}, {'name':'Chocolate Cake','description':'made with Dutch Chocolate', 'price':'$3.99', 'course':'Dessert','id':'2'},{'name':'Caesar Salad', 'description':'with fresh organic vegetables','price':'$5.99', 'course':'Entree','id':'3'},{'name':'Iced Tea', 'description':'with lemon','price':'$.99', 'course':'Beverage','id':'4'},{'name':'Spinach Dip', 'description':'creamy dip with fresh spinach','price':'$1.99', 'course':'Appetizer','id':'5'} ]
+item =  {'name':'Cheese Pizza','description':'made with fresh cheese','price':'$5.99','course' :'Entree'}
+
 
 @app.route('/')
 @app.route('/restaurants/')
 def showRestaurants():
-	return "This page will show all of my restaurants."
+	all_restaurants = restaurants
+	return render_template('restaurants.html', restaurants = all_restaurants)
 	
-@app.route('/restaurant/new/')
-def newRestaurants():
-	return "This page will be for making a new restaurant"
+@app.route('/restaurant/new/', methods=['GET','POST'])
+def newRestaurant():
+	return render_template('newRestaurant.html')
 	
-@app.route('/restaurant/<int:restaurant_id>/edit/')
+@app.route('/restaurant/<int:restaurant_id>/edit/', methods=['GET', 'POST'])
 def editRestaurant(restaurant_id):
-	return "This page will be for editing a current restaurant"
+	edit_restaurant = restaurant
+	return render_template('editRestaurant.html', restaurant = edit_restaurant)
 
+@app.route('/restaurant/<int:restaurant_id>/delete/', methods=['GET','POST'])
+def deleteRestaurant(restaurant_id):
+	delete_restaurant = restaurant
+	return render_template('deleteRestaurant.html', restaurant = delete_restaurant)
+	
 @app.route('/restaurant/<int:restaurant_id>/')
 @app.route('/restaurant/<int:restaurant_id>/menu/')
 def showMenu(restaurant_id):
-	return "This is where the restaurant menu will be for %s." % restaurant_id
+	show_restaurant = restaurant
+	menu = items
+	return render_template('menu.html', restaurant = show_restaurant, items = menu)
 	
 @app.route('/restaurant/<int:restaurant_id>/menu/new/')
 def newMenuItem(restaurant_id):
