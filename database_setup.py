@@ -10,6 +10,7 @@ class Restaurant(Base):
 	__tablename__= 'restaurant'
 	name = Column(String(80), nullable = False)
 	id = Column(Integer, primary_key = True)
+	description = Column(String(1000))
 
 class MenuItem(Base):
 	__tablename__= 'menu_item'
