@@ -57,14 +57,17 @@ def deleteRestaurant(restaurant_id):
 def showMenu(restaurant_id):
 	show_restaurant = session.query(Restaurant).filter_by(id = restaurant_id).one()
 	#menu = session.query(MenuItem).filter_by(restaurant_id = show_restaurant.id).all()
+	#Sessions I wish to include at this time, in the order I would want them in
 	course_order = ["Appetizer", "Beverage", "Entree", "Dessert"]
-	courses_dict = {}
+	courses = []
 	for c in course_order:
+		course_dict = {}
 		menu_items = session.query(MenuItem).filter_by(restaurant_id = show_restaurant.id, course = c).all()
 		if len(menu_items) == 0:
 			continue
-		courses_dict[c] = menu_items
-	return render_template('menu.html', restaurant = show_restaurant, items = menu)
+		course_dict[c] = menu_items
+		courses.append(course_dict)
+	return render_template('menu.html', restaurant = show_restaurant, course_list = courses)
 	
 @app.route('/restaurant/<int:restaurant_id>/menu/new/', methods=['GET','POST'])
 def newMenuItem(restaurant_id):
