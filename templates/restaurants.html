@@ -1,28 +1,25 @@
 <html>
 <head>
 	<title>Restaurants Page</title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 </head>
 <body>
-	<div>
-		<h2>Restaurants Page</h2>
-		<a href='{{ url_for("newRestaurant") }}'>Add New Restaurant</a>
-	</div>
+	<h2>Restaurants Page</h2>
+	<a href='{{ url_for("newRestaurant") }}'>Add New Restaurant</a>
 	
 	{%for restaurant in restaurants%}
 	
-	<div>
+
 	
-		<ul>
-			<li>
-				<a href='{{ url_for("showMenu", restaurant_id = restaurant.id) }}'>{{restaurant.name}}</a>
-			</li>
-			<li>{{restaurant.description}}</li>
-			<li><a href='{{ url_for("editRestaurant", restaurant_id = restaurant.id) }}'>Edit</a></li>
-			<li><a href='{{ url_for("deleteRestaurant", restaurant_id = restaurant.id) }}'>Delete</a></li>
-		</ul>
+	<ul>
+		<li>
+			<a href='{{ url_for("showMenu", restaurant_id = restaurant.id) }}'>{{restaurant.name}}</a>
+		</li>
+		<li>{{restaurant.description}}</li>
+		<li><a href='{{ url_for("editRestaurant", restaurant_id = restaurant.id) }}'>Edit</a></li>
+		<li><a href='{{ url_for("deleteRestaurant", restaurant_id = restaurant.id) }}'>Delete</a></li>
+	</ul>
 	
-	</div>
+
 	
 	{% endfor %}
 	

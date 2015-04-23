@@ -1,20 +1,19 @@
 <html>
 <head>
-	<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css')}}">
+	<title>Delete Menu Item</title>
 </head>
 <body>
-<h1> Are you sure you want to delete {{item.name}}? </h1>
 
-<form action="{{ url_for('deleteMenuItem',restaurant_id = item.restaurant_id, menu_id=item.id)}}" method = 'post'>
+	<h2>Delete {{item.name}}?</h2>
+	
+	<p>You are about to delete {{item.name}} from the database. You cannot undo this action.</p>
+	<p><strong>Are you sure you want to delete the record?</strong></p>
 
-<input type='submit', value = 'Delete'>
-
-
-
+<form action="{{ url_for('deleteMenuItem',restaurant_id = restaurant.id, menu_id=item.id)}}" method = 'post'>
+<input type='submit', value = 'Yes, Please Delete'>
+<a href='{{ url_for("showMenu", restaurant_id = restaurant.id) }}'>Cancel</a>
 
 </form>
-
-<a href = "{{ url_for('restaurantMenu', restaurant_id = restaurant_id)}}"> Cancel </a>
 </body>
 
 </html>

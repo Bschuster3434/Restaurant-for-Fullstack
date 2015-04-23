@@ -1,22 +1,19 @@
 <html>
 <head>
 	<title>Delete Restaurant</title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 </head>
 <body>
-	<div>
-		<h2>Delete Restaurant</h2>
-	</div>
+
+	<h2>Delete {{restaurant.name}}?</h2>
 	
-	<div>
-		<p>You are about to delete {{restaurant.name}} from the database. You cannot undo this action.</p>
-		<p><strong>Are you sure you want to delete the record?</strong></p>
+
+	<p>You are about to delete {{restaurant.name}} from the database. You cannot undo this action.</p>
+	<p><strong>Are you sure you want to delete the record?</strong></p>
 		
-<form action="{{ url_for('deleteRestaurant',restaurant_id = restaurant.id)}}" method = 'post'>
-<input type='submit', value = 'Yes, Please Delete'>
-</form>
-		<a href='{{ url_for("showRestaurants") }}'>Cancel</a>
-	</div>
+	<form action="{{ url_for('deleteRestaurant',restaurant_id = restaurant.id)}}" method = 'post'>
+	<input type='submit', value = 'Yes, Please Delete'>
+	<a href='{{ url_for("showRestaurants") }}'>Cancel</a>
+	</form>
 
 </body>
 </html>
