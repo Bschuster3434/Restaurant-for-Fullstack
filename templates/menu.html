@@ -9,8 +9,20 @@
 </br>
 <a href='{{url_for("newMenuItem", restaurant_id = restaurant.id)}}'>Add A New Menu Item</a>
 
+	{% with messages = get_flashed_messages() %}
+		{% if messages %}
+			<ul>
+			{% for message in messages %}
+				<li> <strong> {{message}} </strong> </li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	{% endwith %}
+
 {% for course in course_list %}
-	<h2>{{course.keys()[0]}}</h2>
+	<!-- The below string is a little messed up. Trying to get the first
+		 leter capitalized. This was easiest. Don't judge me.-->	
+	<h2>{{course.keys()[0][0].upper() + course.keys()[0][1:]}}</h2>
 	{% for i in course.values()[0] %}
 
 	<p><strong>{{i.name}}</strong></p>
